@@ -1,5 +1,6 @@
 from clean import Cleaner
 from predict import Predictor
+from extract import Extractor
 
 
 if __name__ == '__main__':
@@ -30,4 +31,7 @@ if __name__ == '__main__':
     'threshold': 20,
     }
     predictor = Predictor(predictor_args)
-    predictor.predict()
+    # predictor.predict()
+
+    extractor = Extractor()
+    extractor.extract()
