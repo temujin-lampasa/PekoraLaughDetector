@@ -27,7 +27,7 @@ if __name__ == '__main__':
     'threshold': 20,
     }
     cleaner = Cleaner(cleaner_args)
-    # cleaner.clean()
+    cleaner.clean()
 
     predictor_args = {
     'model_fn': current_model,
@@ -38,9 +38,13 @@ if __name__ == '__main__':
     'threshold': 20,
     }
     predictor = Predictor(predictor_args)
-    # predictor.predict()
+    predictor.predict()
 
-    extractor = Extractor()
+    extractor_args = {
+    'src_root': vid_input_path,
+    'pred_file': 'predictions.txt',
+    }
+    extractor = Extractor(extractor_args)
     extractor.extract()
 
     combine_clips()
