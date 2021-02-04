@@ -125,6 +125,7 @@ dmypy.json
 .pyre/
 
 .DS_Store
-input/
-output/
 predictions.txt
+
+video_input/
+video_output/
