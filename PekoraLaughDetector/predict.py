@@ -15,6 +15,7 @@ def make_prediction(args):
     0 = laugh
     1 = not laugh
     """
+    print("Predicting...")
 
     model = load_model(args['model_fn'],
         custom_objects={'STFT':STFT,
