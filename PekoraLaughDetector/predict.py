@@ -30,6 +30,7 @@ def make_prediction(args):
     predictions = []
 
     for z, wav_fn in tqdm(enumerate(wav_paths), total=len(wav_paths)):
+        t_second = int(wav_fn.split("_")[-1].strip(".wav"))  # second in original audio
         rate, wav = downsample_mono(wav_fn, args['sr'])
         mask, env = envelope(wav, rate, threshold=args['threshold'])
         clean_wav = wav[mask]
@@ -49,11 +50,13 @@ def make_prediction(args):
         y_pred = model.predict(X_batch)
         y_mean = np.mean(y_pred, axis=0)
         y_pred = np.argmax(y_mean)
-        predictions.append(y_pred)
+        predictions.append((t_second, y_pred))
+
+        # print(f"{z}: {y_pred}")
 
     # np.save(os.path.join('logs', args['pred_fn']), np.array(results))
-
-    predictions = np.array(predictions)
+    predictions.sort(key=lambda x: x[0]) # sort chronologically, by second
+    predictions = [p[1] for p in predictions]
     with open("predictions.txt", "w+") as pred_file:
         pred_file.write("".join([str(p) for p in predictions]) + "\n")
 
