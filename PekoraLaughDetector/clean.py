@@ -113,5 +113,12 @@ class Cleaner:
     def __init__(self, args):
         self.args = args
 
+    def prepare(self):
+        """Remove existing files in clean directory."""
+        dst_root = self.args['dst_root']
+        for file in os.listdir(dst_root):
+            os.remove(os.path.join(dst_root, file))
+
     def clean(self):
+        self.prepare()
         split_wavs(self.args)
