@@ -55,43 +55,59 @@ def save_sample(sample, rate, target_dir, fn, ix):
 def check_dir(path):
     if os.path.exists(path) is False:
         os.mkdir(path)
+        return False
 
 
 def split_wavs(args):
+    """Split a single file into wavs."""
+
     src_root = args['src_root']
+    if not checkdir(src_root):
+        raise Exception("Add a video file to the output folder.")
+
+    # The src file is the first wav file found.
+    # Assumes only 1 wav file in src_dir
+    src_file = get_first_file(".wav")
+
     dst_root = args['dst_root']
-    check_dir(src_root)
     check_dir(dst_root)
+
     dt = args['delta_time']
-
-
-    dirs = os.listdir(src_root)
 
     target_dir = dst_root
 
-    files = [i for i in os.listdir(src_root) if i!= ".DS_Store"]
-    for fn in tqdm(files):
-        src_fn = os.path.join(src_root, fn)
-        rate, wav = downsample_mono(src_fn, args['sr'])
-        mask, y_mean = envelope(wav, rate, threshold=args['threshold'])
-        # wav = wav[mask]
-        delta_sample = int(dt*rate)
+    rate, wav = downsample_mono(src_file, args['sr'])
+    mask, y_mean = envelope(wav, rate, threshold=args['threshold'])
+    # wav = wav[mask]
+    delta_sample = int(dt*rate)
 
-        # cleaned audio is less than a single sample
-        # pad with zeros to delta_sample size
-        if wav.shape[0] < delta_sample:
-            sample = np.zeros(shape=(delta_sample,), dtype=np.int16)
-            sample[:wav.shape[0]] = wav
-            save_sample(sample, rate, target_dir, fn, 0)
-        # step through audio and save every delta_sample
-        # discard the ending audio if it is too short
-        else:
-            trunc = wav.shape[0] % delta_sample
-            for cnt, i in enumerate(np.arange(0, wav.shape[0]-trunc, delta_sample)):
-                start = int(i)
-                stop = int(i + delta_sample)
-                sample = wav[start:stop]
-                save_sample(sample, rate, target_dir, fn, cnt)
+    # cleaned audio is less than a single sample
+    # pad with zeros to delta_sample size
+    if wav.shape[0] < delta_sample:
+        sample = np.zeros(shape=(delta_sample,), dtype=np.int16)
+        sample[:wav.shape[0]] = wav
+        save_sample(sample, rate, target_dir, fn, 0)
+    # step through audio and save every delta_sample
+    # discard the ending audio if it is too short
+    else:
+        trunc = wav.shape[0] % delta_sample
+        for cnt, i in enumerate(np.arange(0, wav.shape[0]-trunc, delta_sample)):
+            start = int(i)
+            stop = int(i + delta_sample)
+            sample = wav[start:stop]
+            save_sample(sample, rate, target_dir, fn, cnt)
+
+
+def conv_to_wav(args):
+    src_root = args['src_root']
+    src_file = get_first_file((".mp4", ".wav"))
+
+
+
+def get_first_file(root, extension):
+    for file in os.listdir(root):
+        if file.endswith(extension):
+            return os.path.join(root, file)
 
 
 class Cleaner:
