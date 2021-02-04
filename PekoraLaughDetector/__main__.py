@@ -1,6 +1,7 @@
 from clean import Cleaner
 from predict import Predictor
 from extract import Extractor
+from combine import combine_clips
 
 
 if __name__ == '__main__':
@@ -35,3 +36,5 @@ if __name__ == '__main__':
 
     extractor = Extractor()
     extractor.extract()
+
+    combine_clips()
