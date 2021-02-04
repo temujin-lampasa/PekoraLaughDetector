@@ -1,13 +1,26 @@
+from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
+
+
 class Extractor:
     def __init__(self):
         pass
 
     def extract(self):
+        print("Extracting...")
         predictions = None
         with open("predictions.txt", 'r') as p:
             predictions = [int(i) for i in p.readlines()[0].strip()]
 
         segments = self.segment_array(predictions)
+
+        vid_src = "video_input/vid.mkv"
+        clip_num = 0
+        for start, end in segments:
+            clip_num += 1
+            targetname = f"video_output/vid{clip_num}.mkv"
+            ffmpeg_extract_subclip(vid_src, start, end, targetname=targetname)
+
+
 
 
     def segment_array(self, array, patience=3, positive=0):
