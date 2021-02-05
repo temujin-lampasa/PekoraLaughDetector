@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     # convert
     parser.add_argument('--vid_fn', type=str, default=None)
-    parser.add_argument('--combine', type=bool, default=False, action='store_false')
+    parser.add_argument('--combine', type=bool, default=True, action='store_true')
 
     args, _ = parser.parse_known_args()
 
@@ -50,9 +50,9 @@ if __name__ == '__main__':
     check_dir(args.extract_dst)
     check_dir(args.clean_dst)
 
-    # convert_vid_to_wav(args)
-    # clean(args)
-    # make_prediction(args)
+    convert_vid_to_wav(args)
+    clean(args)
+    make_prediction(args)
     extract(args)
-    if not args.no_combine:
+    if args.combine:
         combine_clips(args)
