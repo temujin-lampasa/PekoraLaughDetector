@@ -1,6 +1,6 @@
-from clean import Cleaner
-from predict import Predictor
-from extract import Extractor
+from clean import clean, check_dir
+from predict import make_prediction
+from extract import extract
 from combine import combine_clips
 from convert import convert_vid_to_wav
 import os
@@ -18,6 +18,8 @@ if __name__ == '__main__':
             * Add
               * min_size (probably (1 or 2) + right_buffer + left_buffer)
                 > Filter by min_size before adding the buffer !!
+        > Add help strings
+        > More training data (specifically voice)!
     """
 
     parser = argparse.ArgumentParser(description="Extract laugh segments from video.")
@@ -40,18 +42,17 @@ if __name__ == '__main__':
 
     # convert
     parser.add_argument('--vid_fn', type=str, default=None)
+    parser.add_argument('--combine', type=bool, default=False, action='store_false')
 
     args, _ = parser.parse_known_args()
 
+    check_dir(args.src_root)
+    check_dir(args.extract_dst)
+    check_dir(args.clean_dst)
 
-
-    cleaner = Cleaner(args)
-    predictor = Predictor(args)
-    extractor = Extractor(args)
-
-
-    convert_vid_to_wav(args)
-    cleaner.clean()
-    predictor.predict()
-    extractor.extract()
-    combine_clips(args)
+    # convert_vid_to_wav(args)
+    # clean(args)
+    # make_prediction(args)
+    extract(args)
+    if not args.no_combine:
+        combine_clips(args)

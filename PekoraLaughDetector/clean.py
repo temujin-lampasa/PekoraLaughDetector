@@ -101,21 +101,13 @@ def get_first_filename(root, extension):
             return file
 
 
-class Cleaner:
-
-    def __init__(self, args):
-        self.args = args
-
-    def prepare(self):
-        """Remove existing files in clean directory."""
-        clean_dst = self.args.clean_dst
-        for file in os.listdir(clean_dst):
-            os.remove(os.path.join(clean_dst, file))
-
-    def clean(self):
-        src_root = self.args.src_root
-        check_dir(src_root)
-        clean_dst = self.args.clean_dst
-        check_dir(clean_dst)
-        self.prepare()
-        split_wavs(self.args)
+def clean(args):
+    src_root = args.src_root
+    check_dir(src_root)
+    clean_dst = args.clean_dst
+    check_dir(clean_dst)
+    # Remove existing files in cleaned files directory
+    clean_dst = args.clean_dst
+    for file in os.listdir(clean_dst):
+        os.remove(os.path.join(clean_dst, file))
+    split_wavs(args)

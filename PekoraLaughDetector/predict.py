@@ -60,12 +60,3 @@ def make_prediction(args):
     predictions = [p[1] for p in predictions]
     with open("predictions.txt", "w+") as pred_file:
         pred_file.write("".join([str(p) for p in predictions]) + "\n")
-
-
-class Predictor:
-
-    def __init__(self, args):
-        self.args = args
-
-    def predict(self):
-        make_prediction(self.args)
