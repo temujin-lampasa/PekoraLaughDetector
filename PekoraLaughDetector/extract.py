@@ -100,7 +100,6 @@ class Extractor:
 
         # Merge overlapping segments
         print("Merging overlapping segments...")
-        print(min_segments)
         segments_merged = []
         current_segment = None
 
