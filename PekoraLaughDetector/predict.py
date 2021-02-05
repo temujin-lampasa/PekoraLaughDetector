@@ -12,10 +12,11 @@ from tqdm import tqdm
 
 def make_prediction(args):
     """
-    0 = laugh
-    1 = not laugh
+    0 = not laugh
+    1 = laugh
     """
-    print("Predicting...")
+    threshold = 0.95
+    print(f"Predicting with threshold = {threshold}")
 
     model = load_model(args['model_fn'],
         custom_objects={'STFT':STFT,
@@ -50,9 +51,10 @@ def make_prediction(args):
         X_batch = np.array(batch, dtype=np.float32)
         y_pred = model.predict(X_batch)
         y_mean = np.mean(y_pred, axis=0)
-        y_pred = np.argmax(y_mean)
+        ## y_pred[0][0] -> laugh
+        ## y_pred[0][1] -> not_laugh
+        y_pred = int(y_pred[0][0] > threshold)
         predictions.append((t_second, y_pred))
-
         # print(f"{z}: {y_pred}")
 
     # np.save(os.path.join('logs', args['pred_fn']), np.array(results))
