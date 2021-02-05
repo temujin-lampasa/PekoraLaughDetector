@@ -7,9 +7,9 @@ def combine_clips():
     dst_path = "video_output/"
     valid_extensions = ('.mkv', '.mp4')
     output_extension = '.mp4'
-    start_fname = "vid"
+    start_fname = "laugh"
     extension = None
-    output_filename = "full_vid"
+    output_filename = "all_laughs"
 
     videos = []
     src_vid_files = os.listdir(src_path)
@@ -30,7 +30,7 @@ def combine_clips():
     clips = [VideoFileClip(os.path.join(src_path, v)) for v in videos]
     combined_clips = concatenate_videoclips(clips)
 
-    combined_clips.write_videofile(os.path.join(dst_path, "full_vid" + output_extension))
+    combined_clips.write_videofile(os.path.join(dst_path, output_filename + output_extension))
 
     # Delete source clips
     for file in src_vid_files:
