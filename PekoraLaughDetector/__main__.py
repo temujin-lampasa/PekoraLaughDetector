@@ -11,20 +11,13 @@ import argparse
 if __name__ == '__main__':
 
     """
-    Instructions:
-    1. Clean the input and put it in the output folder.
-    2. Predict on the output folder and store the result in a list.
-
     TODO:
-        > gather training data as well
-        > Sort the clips before concatenating
         > Argparse for main
             * Add option to not extract immediately
         > For extraction:
             * Add
-              * right/left buffer  -- combine overlapping
               * min_size (probably (1 or 2) + right_buffer + left_buffer)
-        > Add valid_extensions arg
+                > Filter by min_size before adding the buffer !!
     """
 
     parser = argparse.ArgumentParser(description="Extract laugh segments from video.")
@@ -50,12 +43,6 @@ if __name__ == '__main__':
 
     args, _ = parser.parse_known_args()
 
-
-
-    wav_clean_path = 'video_input/wavfile_clean'
-    vid_input_path = 'video_input/'
-    vid_output_path = 'video_output/'
-    current_model = 'model/pekora_laugh_lstm.h5'
 
 
     cleaner = Cleaner(args)

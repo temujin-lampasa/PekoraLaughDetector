@@ -24,6 +24,7 @@ class Extractor:
 
         segments = self.segment_array(predictions)
 
+        print("Saving subclips...")
         clip_num = 0
         for start, end in segments:
             clip_num += 1
@@ -31,20 +32,20 @@ class Extractor:
             ffmpeg_extract_subclip(os.path.join(src_root, src_fn),
             start, end, targetname=targetname)
 
-    def segment_array(self, array, patience=3, positive=1):
-        """Divide the array into segments.
+    def segment_array(self, array, patience=3, positive=1, min_size=0,
+    left_buffer=0, right_buffer=1):
+        """Divide the array into segments of positive instances.
         patience = max space between segments
 
-        for clipping interval [seg_start, seg_end)
-        Ex: (1, 4)
-        Starts at second 1, ends right before second 4
+        Used for clipping interval [seg_start, seg_end)
+        Ex: (1, 4) -- Starts at second 1, ends right before second 4
         """
         seg_start = []  # start second
         seg_end = []  # end second
         in_segment = False
         steps_since_positive = 0
 
-
+        print("Retrieving segments...")
         for index, value in enumerate(array):
             if index != len(array) - 1: # if not last elem
                 if in_segment:
@@ -79,5 +80,44 @@ class Extractor:
                         seg_end.append(index + 1)
                     else:
                         continue
-        assert len(seg_start) == len(seg_end), "error segmenting the array"
-        return zip(seg_start, seg_end)
+
+        # Remove all segments less than min size
+        print("Filtering by min. size...")
+        min_segments = []
+
+        for start, end in zip(seg_start, seg_end):
+            if (end - start) >= min_size:
+                min_segments.append((start, end))
+
+        # Add left and right buffers
+        print("Adding buffers...")
+        for index, seg in enumerate(min_segments):
+            start = seg[0] - left_buffer
+            if start < 0:  # don't let start index be negative
+                start = 0
+            end = seg[1] + right_buffer
+            min_segments[index] = (start, end)
+
+        # Merge overlapping segments
+        print("Merging overlapping segments...")
+        print(min_segments)
+        segments_merged = []
+        current_segment = None
+
+        min_segments.sort()
+
+        while min_segments:
+            if current_segment is None:  # first iter, set curr_segment
+                current_segment = min_segments.pop(0)
+            else:  # compare curr_segment to next segment
+                next_segment = min_segments.pop(0)
+                if current_segment[1] >= next_segment[0]:  # merge
+                    current_segment = (current_segment[0], next_segment[1])
+                else:  # pop and change the current segment
+                    segments_merged.append(current_segment)
+                    current_segment = next_segment
+        # When you run out of segments, flush the current_segment
+        if current_segment:
+            segments_merged.append(current_segment)
+
+        return segments_merged
