@@ -18,14 +18,14 @@ def make_prediction(args):
     threshold = 0.95
     print(f"Predicting with threshold = {threshold}")
 
-    model = load_model(args['model_fn'],
+    model = load_model(args.model_fn,
         custom_objects={'STFT':STFT,
                         'Magnitude':Magnitude,
                         'ApplyFilterbank':ApplyFilterbank,
                         'MagnitudeToDecibel':MagnitudeToDecibel})
-    wav_paths = glob('{}/**'.format(args['src_dir']), recursive=True)
+    wav_paths = glob('{}/**'.format(args.clean_dst), recursive=True)
     wav_paths = sorted([x.replace(os.sep, '/') for x in wav_paths if '.wav' in x])
-    classes = sorted(os.listdir(args['src_dir']))
+    classes = sorted(os.listdir(args.clean_dst))
     labels = [os.path.split(x)[0].split('/')[-1] for x in wav_paths]
     le = LabelEncoder()
     y_true = le.fit_transform(labels)
@@ -33,10 +33,10 @@ def make_prediction(args):
 
     for z, wav_fn in tqdm(enumerate(wav_paths), total=len(wav_paths)):
         t_second = int(wav_fn.split("_")[-1].strip(".wav"))  # second in original audio
-        rate, wav = downsample_mono(wav_fn, args['sr'])
-        mask, env = envelope(wav, rate, threshold=args['threshold'])
+        rate, wav = downsample_mono(wav_fn, args.sr)
+        mask, env = envelope(wav, rate, threshold=args.threshold)
         clean_wav = wav[mask]
-        step = int(args['sr']*args['dt'])
+        step = int(args.sr*args.delta_time)
         batch = []
 
 
@@ -55,10 +55,8 @@ def make_prediction(args):
         ## y_pred[0][1] -> not_laugh
         y_pred = int(y_pred[0][0] > threshold)
         predictions.append((t_second, y_pred))
-        # print(f"{z}: {y_pred}")
 
-    # np.save(os.path.join('logs', args['pred_fn']), np.array(results))
-    predictions.sort(key=lambda x: x[0]) # sort chronologically, by second
+    predictions.sort(key=lambda x: x[0]) # sort chronologically
     predictions = [p[1] for p in predictions]
     with open("predictions.txt", "w+") as pred_file:
         pred_file.write("".join([str(p) for p in predictions]) + "\n")

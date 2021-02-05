@@ -60,24 +60,22 @@ def check_dir(path):
 def split_wavs(args):
     """Split a single file into wavs."""
 
-    src_root = args['src_root']
+    src_root = args.src_root
 
     # The src file is the first wav file found.
     # Assumes only 1 wav file in src_dir
     src_fn = get_first_filename(src_root, ".wav")
     print(f"Splitting file {os.path.join(src_root, src_fn)}")
 
-    dst_root = args['dst_root']
+    clean_dst = args.clean_dst
 
 
-    dt = args['delta_time']
+    dt = args.delta_time
 
-    target_dir = dst_root
+    target_dir = clean_dst
 
     print("Downsampling...")
-    rate, wav = downsample_mono(os.path.join(src_root, src_fn), args['sr'])
-    # mask, y_mean = envelope(wav, rate, threshold=args['threshold'])
-    # wav = wav[mask]
+    rate, wav = downsample_mono(os.path.join(src_root, src_fn), args.sr)
     delta_sample = int(dt*rate)
 
     # cleaned audio is less than a single sample
@@ -110,14 +108,14 @@ class Cleaner:
 
     def prepare(self):
         """Remove existing files in clean directory."""
-        dst_root = self.args['dst_root']
-        for file in os.listdir(dst_root):
-            os.remove(os.path.join(dst_root, file))
+        clean_dst = self.args.clean_dst
+        for file in os.listdir(clean_dst):
+            os.remove(os.path.join(clean_dst, file))
 
     def clean(self):
-        src_root = self.args['src_root']
+        src_root = self.args.src_root
         check_dir(src_root)
-        dst_root = self.args['dst_root']
-        check_dir(dst_root)
+        clean_dst = self.args.clean_dst
+        check_dir(clean_dst)
         self.prepare()
         split_wavs(self.args)

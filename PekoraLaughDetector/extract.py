@@ -10,12 +10,12 @@ class Extractor:
 
     def extract(self):
         print("Extracting...")
-        src_root = self.args['src_root']
+        src_root = self.args.src_root
         check_dir(src_root)
-        dst_root = self.args['dst_root']
-        check_dir(dst_root)
+        extract_dst = self.args.extract_dst
+        check_dir(extract_dst)
         src_fn = get_first_filename(src_root, self.valid_extensions)
-        pred_file = self.args['pred_file']
+        pred_file = self.args.pred_file
         output_extension = "." + src_fn.split(".")[-1]
 
         predictions = None

@@ -5,6 +5,8 @@ from combine import combine_clips
 from convert import convert_vid_to_wav
 import os
 
+import argparse
+
 
 if __name__ == '__main__':
 
@@ -22,44 +24,43 @@ if __name__ == '__main__':
             * Add
               * right/left buffer  -- combine overlapping
               * min_size (probably (1 or 2) + right_buffer + left_buffer)
-        > Change threshold to 70 or 80 %
+        > Add valid_extensions arg
     """
+
+    parser = argparse.ArgumentParser(description="Extract laugh segments from video.")
+
+    # All
+    parser.add_argument('--src_root', type=str, default='video_input/')
+    parser.add_argument('--extract_dst', type=str, default='video_output/')
+
+    # Cleaner
+    parser.add_argument('--clean_dst', type=str, default='video_input/wavfile_clean')
+    parser.add_argument('--delta_time', type=float, default=1.0)
+    parser.add_argument('--sr', type=int, default=16_000)
+
+    # Predict
+    parser.add_argument('--model_fn', type=str, default='model/pekora_laugh_lstm.h5')
+    parser.add_argument('--pred_fn', type=str, default='y_pred')
+    parser.add_argument('--threshold', type=int, default=20)
+    parser.add_argument('--pred_file', type=str, default='predictions.txt')
+
+    args, _ = parser.parse_known_args()
+
 
 
     wav_clean_path = 'video_input/wavfile_clean'
     vid_input_path = 'video_input/'
+    vid_output_path = 'video_output/'
     current_model = 'model/pekora_laugh_lstm.h5'
 
 
-    cleaner_args = {
-    'src_root': vid_input_path,
-    'dst_root': wav_clean_path,
-    'delta_time': 1.0,
-    'sr': 16_000,
-    'fn': '3a3d0279',  # todo: remove this
-    'threshold': 20,
-    }
-    cleaner = Cleaner(cleaner_args)
-
-    predictor_args = {
-    'model_fn': current_model,
-    'pred_fn': 'y_pred',
-    'src_dir': wav_clean_path,
-    'dt': 1.0,
-    'sr': 16_000,
-    'threshold': 20,
-    }
-    predictor = Predictor(predictor_args)
-
-    extractor_args = {
-    'src_root': vid_input_path,
-    'pred_file': 'predictions.txt',
-    }
-    extractor = Extractor(extractor_args)
+    cleaner = Cleaner(args)
+    predictor = Predictor(args)
+    extractor = Extractor(args)
 
 
     convert_vid_to_wav(vid_input_path)
-    # cleaner.clean()
-    # predictor.predict()
-    # extractor.extract()
-    # combine_clips()
+    cleaner.clean()
+    predictor.predict()
+    extractor.extract()
+    combine_clips()
