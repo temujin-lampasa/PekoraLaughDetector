@@ -43,6 +43,10 @@ if __name__ == '__main__':
     parser.add_argument('--pred_fn', type=str, default='y_pred')
     parser.add_argument('--threshold', type=int, default=20)
     parser.add_argument('--pred_file', type=str, default='predictions.txt')
+    parser.add_argument('--valid_extensions', type=tuple, default=('.mp4', '.mkv'))
+
+    # convert
+    parser.add_argument('--vid_fn', type=str, default=None)
 
     args, _ = parser.parse_known_args()
 
@@ -59,8 +63,8 @@ if __name__ == '__main__':
     extractor = Extractor(args)
 
 
-    convert_vid_to_wav(vid_input_path)
+    convert_vid_to_wav(args)
     cleaner.clean()
     predictor.predict()
     extractor.extract()
-    combine_clips()
+    combine_clips(args)

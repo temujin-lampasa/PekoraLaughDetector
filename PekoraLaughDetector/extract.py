@@ -6,7 +6,7 @@ import os
 class Extractor:
     def __init__(self, args):
         self.args = args
-        self.valid_extensions = (".mp4", ".mkv")
+        self.valid_extensions = args.valid_extensions
 
     def extract(self):
         print("Extracting...")
@@ -27,7 +27,7 @@ class Extractor:
         clip_num = 0
         for start, end in segments:
             clip_num += 1
-            targetname = f"video_output/vid{clip_num}{output_extension}"
+            targetname = f"video_output/laugh{clip_num}{output_extension}"
             ffmpeg_extract_subclip(os.path.join(src_root, src_fn),
             start, end, targetname=targetname)
 

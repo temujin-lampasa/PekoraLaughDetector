@@ -5,7 +5,7 @@ from moviepy.editor import VideoFileClip, concatenate_videoclips
 def combine_clips(args):
     src_path = args.extract_dst
     dst_path = args.extract_dst
-    valid_extensions = ('.mkv', '.mp4')
+    valid_extensions = args.valid_extensions
     output_extension = '.mp4'
     start_fname = "laugh"
     extension = None
@@ -25,7 +25,7 @@ def combine_clips(args):
         if extension in valid_extensions and file.startswith(start_fname):
             videos.append(file)
 
-    videos.sort(key = lambda x: int(x.split(".")[0].strip("vid")))
+    videos.sort(key = lambda x: int(x.split(".")[0].strip(start_fname)))
 
     clips = [VideoFileClip(os.path.join(src_path, v)) for v in videos]
     combined_clips = concatenate_videoclips(clips)

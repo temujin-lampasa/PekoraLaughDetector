@@ -2,8 +2,12 @@ import ffmpeg
 from clean import get_first_filename
 import os
 
-def convert_vid_to_wav(src_root="video_input", vid_fn = None, sr=16_000):
-    valid_extensions = (".mp4", ".mkv")
+def convert_vid_to_wav(args):
+    src_root= args.src_root
+    sr = args.sr
+    vid_fn = args.vid_fn
+    valid_extensions = args.valid_extensions
+
     if not vid_fn:
         vid_fn = get_first_filename(src_root, valid_extensions)
 
