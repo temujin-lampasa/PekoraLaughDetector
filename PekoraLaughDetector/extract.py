@@ -1,18 +1,22 @@
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
-from clean import get_first_filename
+from clean import get_first_filename, check_dir
 import os
 
 
 class Extractor:
     def __init__(self, args):
         self.args = args
+        self.valid_extensions = (".mp4", ".mkv")
 
     def extract(self):
         print("Extracting...")
         src_root = self.args['src_root']
-        src_fn = get_first_filename(src_root, (".mp4", ".mkv"))
+        check_dir(src_root)
+        dst_root = self.args['dst_root']
+        check_dir(dst_root)
+        src_fn = get_first_filename(src_root, self.valid_extensions)
         pred_file = self.args['pred_file']
-        extension = src_fn.split(".")[-1]
+        output_extension = "." + src_fn.split(".")[-1]
 
         predictions = None
         with open(pred_file, 'r') as p:
@@ -23,11 +27,11 @@ class Extractor:
         clip_num = 0
         for start, end in segments:
             clip_num += 1
-            targetname = f"video_output/vid{clip_num}.{extension}"
+            targetname = f"video_output/vid{clip_num}{output_extension}"
             ffmpeg_extract_subclip(os.path.join(src_root, src_fn),
             start, end, targetname=targetname)
 
-    def segment_array(self, array, patience=3, positive=0):
+    def segment_array(self, array, patience=3, positive=1):
         """Divide the array into segments.
         patience = max space between segments
 

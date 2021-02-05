@@ -68,14 +68,15 @@ def split_wavs(args):
     print(f"Splitting file {os.path.join(src_root, src_fn)}")
 
     dst_root = args['dst_root']
-    check_dir(dst_root)
+
 
     dt = args['delta_time']
 
     target_dir = dst_root
 
+    print("Downsampling...")
     rate, wav = downsample_mono(os.path.join(src_root, src_fn), args['sr'])
-    mask, y_mean = envelope(wav, rate, threshold=args['threshold'])
+    # mask, y_mean = envelope(wav, rate, threshold=args['threshold'])
     # wav = wav[mask]
     delta_sample = int(dt*rate)
 
@@ -114,5 +115,9 @@ class Cleaner:
             os.remove(os.path.join(dst_root, file))
 
     def clean(self):
+        src_root = self.args['src_root']
+        check_dir(src_root)
+        dst_root = self.args['dst_root']
+        check_dir(dst_root)
         self.prepare()
         split_wavs(self.args)
