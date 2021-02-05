@@ -1,6 +1,5 @@
 import os
-from moviepy.editor import VideoFileClip, concatenate_videoclips
-
+from moviepy.editor import VideoFileClip, concatenate_videoclipsf
 
 
 def combine_clips():
@@ -26,11 +25,13 @@ def combine_clips():
         if extension in valid_extensions and file.startswith(start_fname):
             videos.append(file)
 
+    videos.sort(key = lambda x: int(x.split(".")[0].strip("vid")))
+
     clips = [VideoFileClip(os.path.join(src_path, v)) for v in videos]
     combined_clips = concatenate_videoclips(clips)
 
     combined_clips.write_videofile(os.path.join(dst_path, "full_vid." + output_extension))
 
-    # Delete src videos
+    # Delete source clips
     for file in src_vid_files:
         os.remove(os.path.join(src_path, file))
