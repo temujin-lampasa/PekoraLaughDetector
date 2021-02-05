@@ -96,12 +96,6 @@ def split_wavs(args):
             save_sample(sample, rate, target_dir, src_fn, cnt)
 
 
-def conv_to_wav(args):
-    src_root = args['src_root']
-    src_file = get_first_filename(src_root, (".mp4", ".wav"))
-
-
-
 def get_first_filename(root, extension):
     for file in os.listdir(root):
         if file.endswith(extension):
