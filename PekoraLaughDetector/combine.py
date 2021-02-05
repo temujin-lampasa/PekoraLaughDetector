@@ -2,9 +2,9 @@ import os
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 
-def combine_clips():
-    src_path = "video_output/"
-    dst_path = "video_output/"
+def combine_clips(args):
+    src_path = args.extract_dst
+    dst_path = args.extract_dst
     valid_extensions = ('.mkv', '.mp4')
     output_extension = '.mp4'
     start_fname = "laugh"
