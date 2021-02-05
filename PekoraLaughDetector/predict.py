@@ -15,7 +15,7 @@ def make_prediction(args):
     0 = not laugh
     1 = laugh
     """
-    threshold = 0.95
+    threshold = 0.90
     print(f"Predicting with threshold = {threshold}")
 
     model = load_model(args.model_fn,
