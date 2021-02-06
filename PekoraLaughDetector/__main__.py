@@ -5,12 +5,14 @@ from merge import merge_clips
 from convert import convert_vid_to_wav
 import os
 import argparse
+import shutil
 
 
 if __name__ == '__main__':
 
     """
-    TODO: > More training data (specifically voice)!
+    TODO:
+    > Combine clean and predict
     """
 
     parser = argparse.ArgumentParser(description="Extract laugh segments from video.")
@@ -41,7 +43,7 @@ if __name__ == '__main__':
     # convert
     parser.add_argument('--vid_fn', type=str, default=None,
     help='Source video filename', metavar='')
-    parser.add_argument('--no_merge', default=True, action='store_true',
+    parser.add_argument('--no_merge', default=False, action='store_true',
     help="Don't merge the output clips")
 
     args, _ = parser.parse_known_args()
@@ -50,9 +52,11 @@ if __name__ == '__main__':
     check_dir(args.extract_dst)
     check_dir(args.clean_dst)
 
-    convert_vid_to_wav(args)
+    wavfile_path = convert_vid_to_wav(args)
     clean(args)
+    os.remove(wavfile_path)
     make_prediction(args)
+    shutil.rmtree(args.clean_dst)
     extract(args)
     if not args.no_merge:
         merge_clips(args)
