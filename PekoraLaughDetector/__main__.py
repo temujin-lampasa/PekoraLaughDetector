@@ -1,7 +1,7 @@
 from clean import clean, check_dir
 from predict import make_prediction
 from extract import extract
-from combine import combine_clips
+from merge import merge_clips
 from convert import convert_vid_to_wav
 import os
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     # convert
     parser.add_argument('--vid_fn', type=str, default=None)
-    parser.add_argument('--combine', type=bool, default=True, action='store_true')
+    parser.add_argument('--merge', type=bool, default=True, action='store_true')
 
     args, _ = parser.parse_known_args()
 
@@ -54,5 +54,5 @@ if __name__ == '__main__':
     clean(args)
     make_prediction(args)
     extract(args)
-    if args.combine:
-        combine_clips(args)
+    if args.merge:
+        merge_clips(args)

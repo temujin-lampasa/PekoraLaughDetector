@@ -2,7 +2,7 @@ import os
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 
-def combine_clips(args):
+def merge_clips(args):
     src_path = args.extract_dst
     dst_path = args.extract_dst
     valid_extensions = args.valid_extensions
