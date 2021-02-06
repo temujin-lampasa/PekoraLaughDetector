@@ -4,7 +4,6 @@ from extract import extract
 from merge import merge_clips
 from convert import convert_vid_to_wav
 import os
-
 import argparse
 
 
@@ -39,8 +38,6 @@ if __name__ == '__main__':
     help='Mask threshold', metavar='')
     parser.add_argument('--pred_file', type=str, default='model/predictions.txt',
     help='Prediction file path', metavar='')
-
-
     # convert
     parser.add_argument('--vid_fn', type=str, default=None,
     help='Source video filename', metavar='')

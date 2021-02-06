@@ -61,16 +61,13 @@ def split_wavs(args):
     """Split a single file into wavs."""
 
     src_root = args.src_root
+    clean_dst = args.clean_dst
+    dt = args.delta_time
 
     # The src file is the first wav file found.
     # Assumes only 1 wav file in src_dir
     src_fn = get_first_filename(src_root, ".wav")
     print(f"Splitting file {os.path.join(src_root, src_fn)}")
-
-    clean_dst = args.clean_dst
-
-
-    dt = args.delta_time
 
     target_dir = clean_dst
 
@@ -103,8 +100,8 @@ def get_first_filename(root, extension):
 
 def clean(args):
     src_root = args.src_root
-    check_dir(src_root)
     clean_dst = args.clean_dst
+    check_dir(src_root)
     check_dir(clean_dst)
     # Remove existing files in cleaned files directory
     clean_dst = args.clean_dst

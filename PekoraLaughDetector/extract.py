@@ -8,11 +8,12 @@ def extract(args):
     print("Extracting ...")
     valid_extensions = args.valid_extensions
     src_root = args.src_root
-    check_dir(src_root)
     extract_dst = args.extract_dst
+    pred_file = args.pred_file
+    check_dir(src_root)
     check_dir(extract_dst)
     src_fn = get_first_filename(src_root, valid_extensions)
-    pred_file = args.pred_file
+
     output_extension = "." + src_fn.split(".")[-1]
 
     # Retrieve predictions
@@ -96,7 +97,6 @@ left_padding=0, right_padding=1):
                     continue
 
     # Remove all segments less than min size
-    print("Filtering by min. size...")
     min_segments = []
 
     for start, end in zip(seg_start, seg_end):
@@ -104,7 +104,6 @@ left_padding=0, right_padding=1):
             min_segments.append((start, end))
 
     # Add left and right buffers
-    print("Adding buffers...")
     for index, seg in enumerate(min_segments):
         start = seg[0] - left_padding
         if start < 0:  # don't let start index be negative
@@ -113,7 +112,6 @@ left_padding=0, right_padding=1):
         min_segments[index] = (start, end)
 
     # Merge overlapping segments
-    print("Merging overlapping segments...")
     segments_merged = []
     current_segment = None
 
