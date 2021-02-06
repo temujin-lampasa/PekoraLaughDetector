@@ -43,12 +43,12 @@ left_padding=0, right_padding=1):
         min_size (int): minimum segment size before padding.
         left_padding (int): padding for left side of segment.
         right_padding (int): padding for right side of segment.
+
     Returns:
         A list of 2-tuples (start_of_segment, end_of_segment).
 
     Example:
-        For:
-            array = [1, 0, 0, 1, 0, 0, 0, 0, 1]
+        For array = [1, 0, 0, 1, 0, 0, 0, 0, 1]
         Calling this function:
             segment_array(array, patience=3, left_padding=0,
                           right_padding=0, min_size=0)
@@ -103,7 +103,7 @@ left_padding=0, right_padding=1):
         if (end - start) >= min_size:
             min_segments.append((start, end))
 
-    # Add left and right buffers
+    # Add left and right padding
     for index, seg in enumerate(min_segments):
         start = seg[0] - left_padding
         if start < 0:  # don't let start index be negative
