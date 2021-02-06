@@ -18,3 +18,4 @@ def convert_vid_to_wav(args):
     input_vid = ffmpeg.input(vid_path)
     output_wav = ffmpeg.output(input_vid, vid_path.split(".")[0] + ".wav", ar=sr)
     output_wav.run()
+    return vid_path.split(".")[0] + ".wav"
