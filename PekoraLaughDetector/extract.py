@@ -55,8 +55,8 @@ left_padding=0, right_padding=1):
         Returns this value:
             [(0, 4), (8, 9)]
     """
-    seg_start = []  # start second
-    seg_end = []  # end second
+    seg_start = []
+    seg_end = []
     in_segment = False
     steps_since_positive = 0
 
@@ -64,11 +64,11 @@ left_padding=0, right_padding=1):
     for index, value in enumerate(array):
         if index != len(array) - 1: # if not last elem
             if in_segment:
-                if value == positive:  # restart step count
+                if value == positive:
                     steps_since_positive = 0
                 else:
                     steps_since_positive += 1
-                    if steps_since_positive > patience:  # out of patience, end segment
+                    if steps_since_positive > patience:  # end segment
                         in_segment = False
                         seg_end.append(index - patience)
             elif not in_segment:
@@ -106,7 +106,7 @@ left_padding=0, right_padding=1):
     # Add left and right padding
     for index, seg in enumerate(min_segments):
         start = seg[0] - left_padding
-        if start < 0:  # don't let start index be negative
+        if start < 0:
             start = 0
         end = seg[1] + right_padding
         min_segments[index] = (start, end)
@@ -127,7 +127,6 @@ left_padding=0, right_padding=1):
             else:  # pop and change the current segment
                 segments_merged.append(current_segment)
                 current_segment = next_segment
-    # When you run out of segments, flush the current_segment
     if current_segment:
         segments_merged.append(current_segment)
 
