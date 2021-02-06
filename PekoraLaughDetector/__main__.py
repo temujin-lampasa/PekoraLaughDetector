@@ -11,38 +11,42 @@ import argparse
 if __name__ == '__main__':
 
     """
-    TODO:
-        > Argparse for main
-            * Add option to not extract immediately
-        > For extraction:
-            * Add
-              * min_size (probably (1 or 2) + right_buffer + left_buffer)
-                > Filter by min_size before adding the buffer !!
-        > Add help strings
-        > More training data (specifically voice)!
+    TODO: > More training data (specifically voice)!
     """
 
     parser = argparse.ArgumentParser(description="Extract laugh segments from video.")
 
     # All
-    parser.add_argument('--src_root', type=str, default='video_input/')
-    parser.add_argument('--extract_dst', type=str, default='video_output/')
+    parser.add_argument('--src_root', type=str, default='video_input/',
+    help='Video source directory.', metavar='')
+    parser.add_argument('--extract_dst', type=str, default='video_output/',
+    help='Output video directory.', metavar='')
 
     # Cleaner
-    parser.add_argument('--clean_dst', type=str, default='video_input/wavfile_clean')
-    parser.add_argument('--delta_time', type=float, default=1.0)
-    parser.add_argument('--sr', type=int, default=16_000)
+    parser.add_argument('--clean_dst', type=str, default='video_input/wavfile_clean',
+    help='The directory where cleaned data is stored.', metavar='')
+    parser.add_argument('--delta_time', type=float, default=1.0,
+    help='Length of a frame.', metavar='')
+    parser.add_argument('--sr', type=int, default=16_000,
+    help='Sampling rate', metavar='')
 
     # Predict
-    parser.add_argument('--model_fn', type=str, default='model/pekora_laugh_lstm.h5')
-    parser.add_argument('--pred_fn', type=str, default='y_pred')
-    parser.add_argument('--threshold', type=int, default=20)
-    parser.add_argument('--pred_file', type=str, default='predictions.txt')
-    parser.add_argument('--valid_extensions', type=tuple, default=('.mp4', '.mkv'))
+    parser.add_argument('--model_fn', type=str, default='model/pekora_laugh_lstm.h5',
+    help='Model filename', metavar='')
+    parser.add_argument('--pred_fn', type=str, default='y_pred',
+    help='Prediction function', metavar='')
+    parser.add_argument('--threshold', type=int, default=20,
+    help='Mask threshold', metavar='')
+    parser.add_argument('--pred_file', type=str, default='model/predictions.txt',
+    help='Prediction file path', metavar='')
+    parser.add_argument('--valid_extensions', type=tuple, default=('.mp4', '.mkv'),
+    help='Accepted video extensions', metavar='')
 
     # convert
-    parser.add_argument('--vid_fn', type=str, default=None)
-    parser.add_argument('--merge', type=bool, default=True, action='store_true')
+    parser.add_argument('--vid_fn', type=str, default=None,
+    help='Source video filename', metavar='')
+    parser.add_argument('--no_merge', default=True, action='store_true',
+    help="Don't merge the output clips")
 
     args, _ = parser.parse_known_args()
 
@@ -54,5 +58,5 @@ if __name__ == '__main__':
     clean(args)
     make_prediction(args)
     extract(args)
-    if args.merge:
+    if not args.no_merge:
         merge_clips(args)
