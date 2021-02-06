@@ -109,6 +109,8 @@ left_padding=0, right_padding=1):
         if start < 0:
             start = 0
         end = seg[1] + right_padding
+        if end > len(array):
+            end = len(array)
         min_segments[index] = (start, end)
 
     # Merge overlapping segments
@@ -129,5 +131,4 @@ left_padding=0, right_padding=1):
                 current_segment = next_segment
     if current_segment:
         segments_merged.append(current_segment)
-
     return segments_merged
