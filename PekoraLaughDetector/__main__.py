@@ -21,15 +21,15 @@ if __name__ == '__main__':
     help='Video source directory.', metavar='')
     parser.add_argument('--extract_dst', type=str, default='video_output/',
     help='Output video directory.', metavar='')
-
-    # Cleaner
-    parser.add_argument('--clean_dst', type=str, default='video_input/wavfile_clean',
-    help='The directory where cleaned data is stored.', metavar='')
     parser.add_argument('--delta_time', type=float, default=1.0,
     help='Length of a frame. (Train a new model before changing this.)', metavar='')
     parser.add_argument('--sr', type=int, default=16_000,
     help='Sampling rate', metavar='')
-
+    parser.add_argument('--valid_extensions', type=tuple, default=('.mp4', '.mkv'),
+    help='Accepted video extensions', metavar='')
+    # Cleaner
+    parser.add_argument('--clean_dst', type=str, default='video_input/wavfile_clean',
+    help='The directory where cleaned data is stored.', metavar='')
     # Predict
     parser.add_argument('--model_fn', type=str, default='model/pekora_laugh_lstm.h5',
     help='Model filename', metavar='')
@@ -39,8 +39,7 @@ if __name__ == '__main__':
     help='Mask threshold', metavar='')
     parser.add_argument('--pred_file', type=str, default='model/predictions.txt',
     help='Prediction file path', metavar='')
-    parser.add_argument('--valid_extensions', type=tuple, default=('.mp4', '.mkv'),
-    help='Accepted video extensions', metavar='')
+
 
     # convert
     parser.add_argument('--vid_fn', type=str, default=None,
