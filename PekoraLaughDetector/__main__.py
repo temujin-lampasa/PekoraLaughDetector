@@ -26,7 +26,7 @@ if __name__ == '__main__':
     parser.add_argument('--clean_dst', type=str, default='video_input/wavfile_clean',
     help='The directory where cleaned data is stored.', metavar='')
     parser.add_argument('--delta_time', type=float, default=1.0,
-    help='Length of a frame.', metavar='')
+    help='Length of a frame. (Train a new model before changing this.)', metavar='')
     parser.add_argument('--sr', type=int, default=16_000,
     help='Sampling rate', metavar='')
 

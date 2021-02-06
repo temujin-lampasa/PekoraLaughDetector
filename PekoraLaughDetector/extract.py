@@ -4,7 +4,8 @@ import os
 
 
 def extract(args):
-    print("Extracting...")
+    """Extract the video segments with positive predictions."""
+    print("Extracting ...")
     valid_extensions = args.valid_extensions
     src_root = args.src_root
     check_dir(src_root)
@@ -14,13 +15,15 @@ def extract(args):
     pred_file = args.pred_file
     output_extension = "." + src_fn.split(".")[-1]
 
+    # Retrieve predictions
     predictions = None
     with open(pred_file, 'r') as p:
         predictions = [int(i) for i in p.readlines()[0].strip()]
 
+    # Get segments with positive predictions
     segments = segment_array(predictions)
 
-    print("Saving subclips...")
+    # Extract subclips
     clip_num = 0
     for start, end in segments:
         clip_num += 1
@@ -29,12 +32,27 @@ def extract(args):
         start, end, targetname=targetname)
 
 def segment_array(array, patience=3, positive=1, min_size=0,
-left_buffer=0, right_buffer=1):
-    """Divide the array into segments of positive instances.
-    patience = max space between segments
+left_padding=0, right_padding=1):
+    """Divide an array into segments of positive instances.
+    Used for retrieving segments [seg_start, seg_end) from an input video.
 
-    Used for clipping interval [seg_start, seg_end)
-    Ex: (1, 4) -- Starts at second 1, ends right before second 4
+    Args:
+        patience (int): max space between segments.
+        positive (int, str): the positive class.
+        min_size (int): minimum segment size before padding.
+        left_padding (int): padding for left side of segment.
+        right_padding (int): padding for right side of segment.
+    Returns:
+        A list of 2-tuples (start_of_segment, end_of_segment).
+
+    Example:
+        For:
+            array = [1, 0, 0, 1, 0, 0, 0, 0, 1]
+        Calling this function:
+            segment_array(array, patience=3, left_padding=0,
+                          right_padding=0, min_size=0)
+        Returns this value:
+            [(0, 4), (8, 9)]
     """
     seg_start = []  # start second
     seg_end = []  # end second
@@ -88,10 +106,10 @@ left_buffer=0, right_buffer=1):
     # Add left and right buffers
     print("Adding buffers...")
     for index, seg in enumerate(min_segments):
-        start = seg[0] - left_buffer
+        start = seg[0] - left_padding
         if start < 0:  # don't let start index be negative
             start = 0
-        end = seg[1] + right_buffer
+        end = seg[1] + right_padding
         min_segments[index] = (start, end)
 
     # Merge overlapping segments
