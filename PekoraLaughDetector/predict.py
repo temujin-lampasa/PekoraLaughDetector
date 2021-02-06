@@ -58,5 +58,5 @@ def make_prediction(args):
 
     predictions.sort(key=lambda x: x[0]) # sort chronologically
     predictions = [p[1] for p in predictions]
-    with open("predictions.txt", "w+") as pred_file:
+    with open(args.pred_file, "w+") as pred_file:
         pred_file.write("".join([str(p) for p in predictions]) + "\n")
