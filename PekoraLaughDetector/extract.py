@@ -6,7 +6,6 @@ import os
 def extract(args):
     """Extract the video segments with positive predictions."""
     print("Extracting ...")
-    valid_extensions = args.valid_extensions
     src_root = args.src_root
     extract_dst = args.extract_dst
     pred_file = args.pred_file

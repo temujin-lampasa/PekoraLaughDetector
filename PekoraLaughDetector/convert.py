@@ -5,7 +5,6 @@ def convert_vid_to_wav(args):
     src_root= args.src_root
     sr = args.sr
     vid_fn = args.vid_fn
-    valid_extensions = args.valid_extensions
     wav_path = os.path.join(src_root, "".join(vid_fn.split(".")[:-1]) + ".wav")
     vid_path = os.path.join(src_root, vid_fn)
 

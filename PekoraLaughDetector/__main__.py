@@ -1,5 +1,5 @@
-from clean import check_dir, Predictor
-# from predict import make_prediction
+from clean import check_dir
+from predict import Predictor
 from extract import extract
 from merge import merge_clips
 from convert import convert_vid_to_wav
@@ -29,11 +29,6 @@ if __name__ == '__main__':
     help='Length of a frame. (Train a new model before changing this.)', metavar='')
     parser.add_argument('--sr', type=int, default=16_000,
     help='Sampling rate', metavar='')
-    parser.add_argument('--valid_extensions', type=tuple, default=('.mp4', '.mkv'),
-    help='Accepted video extensions', metavar='')
-    # Cleaner
-    parser.add_argument('--clean_dst', type=str, default='video_input/wavfile_clean',
-    help='The directory where cleaned data is stored.', metavar='')
     # Predict
     parser.add_argument('--model_fn', type=str, default='model/pekora_laugh_lstm.h5',
     help='Model filename', metavar='')
@@ -59,14 +54,11 @@ if __name__ == '__main__':
     for video in video_files:
         check_dir(args.src_root)
         check_dir(args.extract_dst)
-        check_dir(args.clean_dst)
         args.vid_fn = video
         wavfile_path = convert_vid_to_wav(args)
         p.clean_and_predict()
-        # clean(args)
-        # os.remove(wavfile_path)
-        # make_prediction(args)
-        # shutil.rmtree(args.clean_dst)
-        # extract(args)
-        # if not args.no_merge:
-        #     merge_clips(args)
+        p.save_predictions()
+        os.remove(wavfile_path)
+        extract(args)
+        if not args.no_merge:
+            merge_clips(args)

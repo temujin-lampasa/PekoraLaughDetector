@@ -1,31 +1,54 @@
-from tensorflow.keras.models import load_model
-from clean import downsample_mono, envelope
-from kapre.time_frequency import STFT, Magnitude, ApplyFilterbank, MagnitudeToDecibel
-from sklearn.preprocessing import LabelEncoder
-import numpy as np
-from glob import glob
-import argparse
 import os
+import numpy as np
 import pandas as pd
-from tqdm import tqdm
+from tensorflow.keras.models import load_model
+from kapre.time_frequency import STFT, Magnitude, ApplyFilterbank, MagnitudeToDecibel
+from clean import downsample_mono, envelope, save_sample
 
 
-def make_prediction(wav, rate, sr, model_fn, delta_time, pred_file):
-    """
-    0 = not laugh
-    1 = laugh
-    """
-    threshold = 0.98
-    print(f"Predicting with threshold = {threshold}")
+class Predictor:
+    def __init__(self, args):
+        """Load the model and other prediction vars."""
+        # Predictions
+        self.args = args
+        self.pred_threshold = 0.98
+        print(f"Predicting with threshold = {self.pred_threshold}")
+        self.predictions = []
+        self.model = load_model(args.model_fn,
+            custom_objects={'STFT':STFT,
+                            'Magnitude':Magnitude,
+                            'ApplyFilterbank':ApplyFilterbank,
+                            'MagnitudeToDecibel':MagnitudeToDecibel})
 
-    model = load_model(args.model_fn,
-        custom_objects={'STFT':STFT,
-                        'Magnitude':Magnitude,
-                        'ApplyFilterbank':ApplyFilterbank,
-                        'MagnitudeToDecibel':MagnitudeToDecibel})
-    predictions = []
+    def clean_and_predict(self):
+        """Predict for each dt of a wav file."""
+        wav_fn = "".join(self.args.vid_fn.split(".")[:-1]) + ".wav"
+        rate, wav = downsample_mono(
+            os.path.join(self.args.src_root, wav_fn), self.args.sr
+        )
+        mask, y_mean = envelope(wav, rate, threshold=self.args.threshold)
+        wav = wav[mask]
+        delta_sample = int(self.args.delta_time*rate)
 
-        step = int(args.sr*args.delta_time)
+        # cleaned audio is less than a single sample
+        # pad with zeros to delta_sample size, then predict
+        if wav.shape[0] < delta_sample:
+            sample = np.zeros(shape=(delta_sample,), dtype=np.int16)
+            sample[:wav.shape[0]] = wav
+            p = self.make_prediction(sample)
+            self.predictions.append(int(p))
+        # step through audio and predict for every delta_sample
+        else:
+            for cnt, i in enumerate(np.arange(0, wav.shape[0], delta_sample)):
+                start = int(i)
+                stop = int(i + delta_sample)
+                sample = wav[start:stop]
+                p = self.make_prediction(sample)
+                self.predictions.append(int(p))
+
+    def make_prediction(self, wav):
+        """Make a prediction on a single dt."""
+        step = int(self.args.sr * self.args.delta_time)
         batch = []
 
         for i in range(0, wav.shape[0], step):
@@ -37,12 +60,15 @@ def make_prediction(wav, rate, sr, model_fn, delta_time, pred_file):
                 sample = tmp
             batch.append(sample)
         X_batch = np.array(batch, dtype=np.float32)
-        y_pred = model.predict(X_batch)
+        y_pred = self.model.predict(X_batch)
         y_mean = np.mean(y_pred, axis=0)
-        ## y_pred[0][0] -> laugh
-        ## y_pred[0][1] -> not_laugh
-        y_pred = int(y_pred[0][0] > threshold)
-        predictions.append((t_second, y_pred))
+        # y_mean[0] -- laugh
+        # y_mean[1] -- not_laugh
+        prediction = y_mean[0] > self.pred_threshold
+        return prediction
 
-    with open(args.pred_file, "w+") as pred_file:
-        pred_file.write("".join([str(p) for p in predictions]) + "\n")
+    def save_predictions(self):
+        """Save predictions to text file."""
+        pred_string = "".join([str(p) for p in self.predictions])
+        with open(self.args.pred_file, 'w+') as f:
+            f.write(pred_string)
