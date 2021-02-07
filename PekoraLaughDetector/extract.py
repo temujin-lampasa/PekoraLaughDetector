@@ -52,13 +52,14 @@ class Extractor:
         extract_dst = self.args.extract_dst
         src_root = self.args.src_root
         subclips_dir = self.subclips_dir
+        output_fn = "".join(vid_fn.split(".")[:-1]) + ".mp4"
 
         # merge subclips
         subclips_fn = os.listdir(subclips_dir)
         subclips_fn.sort(key = lambda x: int(x.split(".")[0].strip(self.subclip_fn)))
         subclips = [VideoFileClip(os.path.join(subclips_dir, sc)) for sc in subclips_fn]
         combined_clips = concatenate_videoclips(subclips)
-        combined_clips.write_videofile(os.path.join(extract_dst, vid_fn))
+        combined_clips.write_videofile(os.path.join(extract_dst, output_fn))
 
         # Delete subclips after merging
         shutil.rmtree(subclips_dir)
