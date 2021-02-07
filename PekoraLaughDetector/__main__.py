@@ -13,6 +13,9 @@ if __name__ == '__main__':
     """
     TODO:
     > Combine clean and predict
+        * Note: cleaning loses data.
+    > Fix tuple arg. Change to single value.
+    > support multiple files
     """
 
     parser = argparse.ArgumentParser(description="Extract laugh segments from video.")
@@ -52,11 +55,18 @@ if __name__ == '__main__':
     check_dir(args.extract_dst)
     check_dir(args.clean_dst)
 
-    wavfile_path = convert_vid_to_wav(args)
-    clean(args)
-    os.remove(wavfile_path)
-    make_prediction(args)
-    shutil.rmtree(args.clean_dst)
-    extract(args)
-    if not args.no_merge:
-        merge_clips(args)
+    valid_extensions = ('.mp4', '.mkv')
+    for file in os.listdir(args.src_root):
+        if file.endswith(valid_extensions):
+            args.vid_fn = file
+            print(args.vid_fn)
+            wavfile_path = convert_vid_to_wav(args)
+            print("CLEANING" * 20)
+            clean(args)
+            print("DONE" * 20)
+            # os.remove(wavfile_path)
+            # make_prediction(args)
+            # shutil.rmtree(args.clean_dst)
+            # extract(args)
+            # if not args.no_merge:
+            #     merge_clips(args)

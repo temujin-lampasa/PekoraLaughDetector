@@ -1,5 +1,5 @@
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
-from clean import get_first_filename, check_dir
+from clean import check_dir
 import os
 
 
@@ -12,9 +12,9 @@ def extract(args):
     pred_file = args.pred_file
     check_dir(src_root)
     check_dir(extract_dst)
-    src_fn = get_first_filename(src_root, valid_extensions)
+    vid_fn = args.vid_fn
 
-    output_extension = "." + src_fn.split(".")[-1]
+    output_extension = "." + vid_fn.split(".")[-1]
 
     # Retrieve predictions
     predictions = None
@@ -29,7 +29,7 @@ def extract(args):
     for start, end in segments:
         clip_num += 1
         targetname = f"video_output/laugh{clip_num}{output_extension}"
-        ffmpeg_extract_subclip(os.path.join(src_root, src_fn),
+        ffmpeg_extract_subclip(os.path.join(src_root, vid_fn),
         start, end, targetname=targetname)
 
 def segment_array(array, patience=3, positive=1, min_size=0,

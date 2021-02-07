@@ -1,3 +1,5 @@
+
+
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
 import argparse
@@ -63,13 +65,9 @@ def split_wavs(args):
     src_root = args.src_root
     clean_dst = args.clean_dst
     dt = args.delta_time
+    src_fn = args.vid_fn
 
-    # The src file is the first wav file found.
-    # Assumes only 1 wav file in src_dir
-    src_fn = get_first_filename(src_root, ".wav")
     print(f"Splitting file {os.path.join(src_root, src_fn)}")
-
-    target_dir = clean_dst
 
     print("Downsampling...")
     rate, wav = downsample_mono(os.path.join(src_root, src_fn), args.sr)
@@ -80,7 +78,7 @@ def split_wavs(args):
     if wav.shape[0] < delta_sample:
         sample = np.zeros(shape=(delta_sample,), dtype=np.int16)
         sample[:wav.shape[0]] = wav
-        save_sample(sample, rate, target_dir, src_fn, 0)
+        save_sample(sample, rate, clean_dst, src_fn, 0)
     # step through audio and save every delta_sample
     # discard the ending audio if it is too short
     else:
@@ -89,22 +87,9 @@ def split_wavs(args):
             start = int(i)
             stop = int(i + delta_sample)
             sample = wav[start:stop]
-            save_sample(sample, rate, target_dir, src_fn, cnt)
-
-
-def get_first_filename(root, extension):
-    for file in os.listdir(root):
-        if file.endswith(extension):
-            return file
+            save_sample(sample, rate, clean_dst, src_fn, cnt)
 
 
 def clean(args):
-    src_root = args.src_root
-    clean_dst = args.clean_dst
-    check_dir(src_root)
-    check_dir(clean_dst)
-    # Remove existing files in cleaned files directory
-    clean_dst = args.clean_dst
-    for file in os.listdir(clean_dst):
-        os.remove(os.path.join(clean_dst, file))
+    print("Cleaning..." * 50)
     split_wavs(args)

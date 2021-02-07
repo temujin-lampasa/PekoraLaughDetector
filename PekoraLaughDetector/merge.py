@@ -1,37 +1,29 @@
 import os
 from moviepy.editor import VideoFileClip, concatenate_videoclips
+from clean import check_dir
 
 
 def merge_clips(args):
-    src_path = args.extract_dst
-    dst_path = args.extract_dst
-    valid_extensions = args.valid_extensions
     output_extension = '.mp4'
     start_fname = "laugh"
-    extension = None
-    output_filename = "all_laughs"
+    dst_root = args.extract_dst
 
-    videos = []
-    src_vid_files = os.listdir(src_path)
 
-    c = 0
-    while os.path.exists(os.path.join(dst_path, output_filename)):
+    # Get subclips directory
+    c = 1
+    subclips_dir = os.path.join(args.extract_dst, "subclips")
+    while os.path.exists(subclips_dir):
         c += 1
-        output_filename += str(c)
+        subclips_dir = os.path.join(args.extract_dst, "subclips" + str(c))
+    check_dir(subclips_dir)
 
+    # merge subclips
+    subclips_fn = os.listdir(subclips_dir)
+    subclips_fn.sort(key = lambda x: int(x.split(".")[0].strip(start_fname)))
+    subclips = [VideoFileClip(os.path.join(subclips_dir, sc)) for sc in subclips_fn]
+    combined_clips = concatenate_videoclips(subclips)
+    combined_clips.write_videofile(os.path.join(dst_root, args.vid_fn))
 
-    for file in src_vid_files:
-        extension = "." + file.split(".")[-1]
-        if extension in valid_extensions and file.startswith(start_fname):
-            videos.append(file)
-
-    videos.sort(key = lambda x: int(x.split(".")[0].strip(start_fname)))
-
-    clips = [VideoFileClip(os.path.join(src_path, v)) for v in videos]
-    combined_clips = concatenate_videoclips(clips)
-
-    combined_clips.write_videofile(os.path.join(dst_path, output_filename + output_extension))
-
-    # Delete source clips
-    for file in src_vid_files:
+    # Delete subclips after merging
+    for file in subclips_dir:
         os.remove(os.path.join(src_path, file))

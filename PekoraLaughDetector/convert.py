@@ -1,5 +1,4 @@
 import ffmpeg
-from clean import get_first_filename
 import os
 
 def convert_vid_to_wav(args):
@@ -7,9 +6,6 @@ def convert_vid_to_wav(args):
     sr = args.sr
     vid_fn = args.vid_fn
     valid_extensions = args.valid_extensions
-
-    if not vid_fn:
-        vid_fn = get_first_filename(src_root, valid_extensions)
 
     vid_path = os.path.join(src_root, vid_fn)
 
