@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 from tensorflow.keras.models import load_model
 from kapre.time_frequency import STFT, Magnitude, ApplyFilterbank, MagnitudeToDecibel
-from clean import downsample_mono, envelope
+from clean import downsample_mono
 
 
 class Predictor:
@@ -25,11 +25,9 @@ class Predictor:
         rate, wav = downsample_mono(
             os.path.join(self.args.src_root, wav_fn), self.args.sr
         )
-        # mask, y_mean = envelope(wav, rate, threshold=self.args.threshold)
-        # wav = wav[mask]
         delta_sample = int(self.args.delta_time*rate)
-
-        # cleaned audio is less than a single sample
+        
+        # audio is less than a single sample
         # pad with zeros to delta_sample size, then predict
         if wav.shape[0] < delta_sample:
             sample = np.zeros(shape=(delta_sample,), dtype=np.int16)
