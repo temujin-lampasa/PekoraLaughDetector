@@ -65,12 +65,13 @@ def split_wavs(args):
     src_root = args.src_root
     clean_dst = args.clean_dst
     dt = args.delta_time
-    src_fn = args.vid_fn
+    wav_fn = "".join(args.vid_fn.split(".")[:-1]) + ".wav"
 
-    print(f"Splitting file {os.path.join(src_root, src_fn)}")
+
+    print(f"Splitting file {os.path.join(src_root, wav_fn)}")
 
     print("Downsampling...")
-    rate, wav = downsample_mono(os.path.join(src_root, src_fn), args.sr)
+    rate, wav = downsample_mono(os.path.join(src_root, wav_fn), args.sr)
     delta_sample = int(dt*rate)
 
     # cleaned audio is less than a single sample
@@ -78,7 +79,7 @@ def split_wavs(args):
     if wav.shape[0] < delta_sample:
         sample = np.zeros(shape=(delta_sample,), dtype=np.int16)
         sample[:wav.shape[0]] = wav
-        save_sample(sample, rate, clean_dst, src_fn, 0)
+        save_sample(sample, rate, clean_dst, wav_fn, 0)
     # step through audio and save every delta_sample
     # discard the ending audio if it is too short
     else:
@@ -87,9 +88,8 @@ def split_wavs(args):
             start = int(i)
             stop = int(i + delta_sample)
             sample = wav[start:stop]
-            save_sample(sample, rate, clean_dst, src_fn, cnt)
+            save_sample(sample, rate, clean_dst, wav_fn, cnt)
 
 
 def clean(args):
-    print("Cleaning..." * 50)
     split_wavs(args)

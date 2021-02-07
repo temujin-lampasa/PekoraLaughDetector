@@ -51,22 +51,20 @@ if __name__ == '__main__':
 
     args, _ = parser.parse_known_args()
 
-    check_dir(args.src_root)
-    check_dir(args.extract_dst)
-    check_dir(args.clean_dst)
-
-    valid_extensions = ('.mp4', '.mkv')
-    for file in os.listdir(args.src_root):
-        if file.endswith(valid_extensions):
-            args.vid_fn = file
-            print(args.vid_fn)
-            wavfile_path = convert_vid_to_wav(args)
-            print("CLEANING" * 20)
-            clean(args)
-            print("DONE" * 20)
-            # os.remove(wavfile_path)
-            # make_prediction(args)
-            # shutil.rmtree(args.clean_dst)
-            # extract(args)
-            # if not args.no_merge:
-            #     merge_clips(args)
+    valid_extensions = ('mp4', 'mkv')
+    video_files = [f for f in os.listdir(args.src_root)
+                   if f.split(".")[-1] in valid_extensions]
+    for video in video_files:
+        check_dir(args.src_root)
+        check_dir(args.extract_dst)
+        check_dir(args.clean_dst)
+        args.vid_fn = video
+        print(args.vid_fn)
+        wavfile_path = convert_vid_to_wav(args)
+        clean(args)
+        os.remove(wavfile_path)
+        make_prediction(args)
+        shutil.rmtree(args.clean_dst)
+        # extract(args)
+        # if not args.no_merge:
+        #     merge_clips(args)
