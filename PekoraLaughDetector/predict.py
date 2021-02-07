@@ -25,8 +25,8 @@ class Predictor:
         rate, wav = downsample_mono(
             os.path.join(self.args.src_root, wav_fn), self.args.sr
         )
-        mask, y_mean = envelope(wav, rate, threshold=self.args.threshold)
-        wav = wav[mask]
+        # mask, y_mean = envelope(wav, rate, threshold=self.args.threshold)
+        # wav = wav[mask]
         delta_sample = int(self.args.delta_time*rate)
 
         # cleaned audio is less than a single sample
