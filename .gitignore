@@ -127,5 +127,7 @@ dmypy.json
 .DS_Store
 predictions.txt
 
-video_input/
-video_output/
+*.mp4
+*.wav
+*.mp3
+*.mkv
