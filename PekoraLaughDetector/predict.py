@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 from tensorflow.keras.models import load_model
 from kapre.time_frequency import STFT, Magnitude, ApplyFilterbank, MagnitudeToDecibel
 from clean import downsample_mono, envelope, save_sample
@@ -12,7 +13,6 @@ class Predictor:
         # Predictions
         self.args = args
         self.pred_threshold = 0.98
-        print(f"Predicting with threshold = {self.pred_threshold}")
         self.predictions = []
         self.model = load_model(args.model_fn,
             custom_objects={'STFT':STFT,
@@ -22,6 +22,7 @@ class Predictor:
 
     def clean_and_predict(self):
         """Predict for each dt of a wav file."""
+        print(f"Predicting with threshold = {self.pred_threshold} ...")
         wav_fn = "".join(self.args.vid_fn.split(".")[:-1]) + ".wav"
         rate, wav = downsample_mono(
             os.path.join(self.args.src_root, wav_fn), self.args.sr
@@ -39,7 +40,8 @@ class Predictor:
             self.predictions.append(int(p))
         # step through audio and predict for every delta_sample
         else:
-            for cnt, i in enumerate(np.arange(0, wav.shape[0], delta_sample)):
+            steps = np.arange(0, wav.shape[0], delta_sample)
+            for i in tqdm(steps, total=len(steps)):
                 start = int(i)
                 stop = int(i + delta_sample)
                 sample = wav[start:stop]
