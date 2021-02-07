@@ -7,15 +7,6 @@ from convert import convert_vid_to_wav
 
 
 if __name__ == '__main__':
-
-    """
-    TODO:
-    > Combine clean and predict
-        * Note: cleaning loses data.
-    > Fix tuple arg. Change to single value.
-    > support multiple files
-    """
-
     parser = argparse.ArgumentParser(description="Extract laugh segments from video.")
 
     # All
@@ -24,7 +15,7 @@ if __name__ == '__main__':
     parser.add_argument('--extract_dst', type=str, default='video_output/',
     help='Output video directory.', metavar='')
     parser.add_argument('--delta_time', type=float, default=1.0,
-    help='Length of a frame. (Train a new model before changing this.)', metavar='')
+    help='Length of a frame.', metavar='')
     parser.add_argument('--sr', type=int, default=16_000,
     help='Sampling rate', metavar='')
     # Predict
@@ -36,7 +27,7 @@ if __name__ == '__main__':
     help='Mask threshold', metavar='')
     parser.add_argument('--pred_file', type=str, default='model/predictions.txt',
     help='Prediction file path', metavar='')
-    # convert
+    # Convert
     parser.add_argument('--vid_fn', type=str, default=None,
     help='Source video filename', metavar='')
     parser.add_argument('--no_merge', default=False, action='store_true',

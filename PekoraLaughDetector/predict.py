@@ -9,7 +9,6 @@ from clean import downsample_mono, envelope
 class Predictor:
     def __init__(self, args):
         """Load the model and other prediction vars."""
-        # Predictions
         self.args = args
         self.pred_threshold = 0.98
         self.predictions = []
@@ -20,7 +19,7 @@ class Predictor:
                             'MagnitudeToDecibel':MagnitudeToDecibel})
 
     def clean_and_predict(self):
-        """Predict for each dt of a wav file."""
+        """Predict for each dt of a wav file. Store in self.predictions."""
         print(f"Predicting with threshold = {self.pred_threshold} ...")
         wav_fn = "".join(self.args.vid_fn.split(".")[:-1]) + ".wav"
         rate, wav = downsample_mono(

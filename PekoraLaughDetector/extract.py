@@ -42,8 +42,6 @@ class Extractor:
                 self.subclips_dir,
                 f"{self.subclip_fn}{clip_num}{output_extension}")
             src_file = os.path.join(src_root, vid_fn)
-
-
             ffmpeg_extract_subclip(src_file, start, end, targetname=targetname)
 
     def merge_clips(self):
