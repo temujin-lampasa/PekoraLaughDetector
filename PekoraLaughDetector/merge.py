@@ -9,12 +9,8 @@ def merge_clips(args):
     dst_root = args.extract_dst
 
 
-    # Get subclips directory
-    c = 1
-    subclips_dir = os.path.join(args.extract_dst, "subclips")
-    while os.path.exists(subclips_dir):
-        c += 1
-        subclips_dir = os.path.join(args.extract_dst, "subclips" + str(c))
+    # Make subclips directory
+    subclips_dir = os.path.join(args.extract_dst, "subclips_" + args.vid_fn)
     check_dir(subclips_dir)
 
     # merge subclips
