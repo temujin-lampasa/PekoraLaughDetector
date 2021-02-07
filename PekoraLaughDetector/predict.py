@@ -10,7 +10,7 @@ import pandas as pd
 from tqdm import tqdm
 
 
-def make_prediction(args):
+def make_prediction(wav, rate, sr, model_fn, delta_time, pred_file):
     """
     0 = not laugh
     1 = laugh
@@ -23,22 +23,10 @@ def make_prediction(args):
                         'Magnitude':Magnitude,
                         'ApplyFilterbank':ApplyFilterbank,
                         'MagnitudeToDecibel':MagnitudeToDecibel})
-    wav_paths = glob('{}/**'.format(args.clean_dst), recursive=True)
-    wav_paths = sorted([x.replace(os.sep, '/') for x in wav_paths if '.wav' in x])
-    classes = sorted(os.listdir(args.clean_dst))
-    labels = [os.path.split(x)[0].split('/')[-1] for x in wav_paths]
-    le = LabelEncoder()
-    y_true = le.fit_transform(labels)
     predictions = []
 
-    for z, wav_fn in tqdm(enumerate(wav_paths), total=len(wav_paths)):
-        t_second = int(wav_fn.split("_")[-1].strip(".wav"))  # second in original audio
-        rate, wav = downsample_mono(wav_fn, args.sr)
-        mask, env = envelope(wav, rate, threshold=args.threshold)
-        clean_wav = wav[mask]
         step = int(args.sr*args.delta_time)
         batch = []
-
 
         for i in range(0, wav.shape[0], step):
             sample = wav[i:i+step]
@@ -56,7 +44,5 @@ def make_prediction(args):
         y_pred = int(y_pred[0][0] > threshold)
         predictions.append((t_second, y_pred))
 
-    predictions.sort(key=lambda x: x[0]) # sort chronologically
-    predictions = [p[1] for p in predictions]
     with open(args.pred_file, "w+") as pred_file:
         pred_file.write("".join([str(p) for p in predictions]) + "\n")

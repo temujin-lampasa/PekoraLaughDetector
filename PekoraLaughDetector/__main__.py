@@ -1,5 +1,5 @@
-from clean import clean, check_dir
-from predict import make_prediction
+from clean import check_dir, Predictor
+# from predict import make_prediction
 from extract import extract
 from merge import merge_clips
 from convert import convert_vid_to_wav
@@ -51,6 +51,8 @@ if __name__ == '__main__':
 
     args, _ = parser.parse_known_args()
 
+    p = Predictor(args)
+
     valid_extensions = ('mp4', 'mkv')
     video_files = [f for f in os.listdir(args.src_root)
                    if f.split(".")[-1] in valid_extensions]
@@ -59,12 +61,12 @@ if __name__ == '__main__':
         check_dir(args.extract_dst)
         check_dir(args.clean_dst)
         args.vid_fn = video
-        print(args.vid_fn)
         wavfile_path = convert_vid_to_wav(args)
-        clean(args)
-        os.remove(wavfile_path)
-        make_prediction(args)
-        shutil.rmtree(args.clean_dst)
+        p.clean_and_predict()
+        # clean(args)
+        # os.remove(wavfile_path)
+        # make_prediction(args)
+        # shutil.rmtree(args.clean_dst)
         # extract(args)
         # if not args.no_merge:
         #     merge_clips(args)
