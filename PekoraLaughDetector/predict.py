@@ -1,10 +1,9 @@
 import os
 import numpy as np
-import pandas as pd
 from tqdm import tqdm
 from tensorflow.keras.models import load_model
 from kapre.time_frequency import STFT, Magnitude, ApplyFilterbank, MagnitudeToDecibel
-from clean import downsample_mono, envelope, save_sample
+from clean import downsample_mono, envelope
 
 
 class Predictor:

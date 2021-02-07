@@ -1,10 +1,10 @@
-
-from scipy.io import wavfile
 import os
+import wavio
 import numpy as np
 import pandas as pd
+from scipy.io import wavfile
 from librosa.core import resample, to_mono
-import wavio
+
 
 def envelope(y, rate, threshold):
     mask = []

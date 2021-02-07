@@ -1,9 +1,8 @@
-from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
-from clean import check_dir
 import os
 import shutil
-from moviepy.editor import VideoFileClip, concatenate_videoclips
 from clean import check_dir
+from moviepy.editor import VideoFileClip, concatenate_videoclips
+from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 
 
 class Extractor:
