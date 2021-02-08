@@ -23,11 +23,10 @@ class Predictor:
     def clean_and_predict(self):
         """Predict for each dt of a wav file. Store in self.predictions."""
         print(f"Predicting with threshold = {self.pred_threshold} ...")
-        wav_fn = "".join(self.args.vid_fn.split(".")[:-1]) + ".wav"
-        rate, wav = downsample_mono(
-            os.path.join(self.args.src_root, wav_fn), self.args.sr
-        )
-        delta_sample = int(self.args.delta_time*rate)
+        args = self.args
+        wav_fn = "".join(args.vid_fn.split(".")[:-1]) + ".wav"
+        rate, wav = downsample_mono(os.path.join(args.src_root, wav_fn), args.sr)
+        delta_sample = int(args.delta_time*rate)
 
         # audio is less than a single sample
         # pad with zeros to delta_sample size, then predict
