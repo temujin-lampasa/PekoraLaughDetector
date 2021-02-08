@@ -12,7 +12,7 @@ class Predictor:
     def __init__(self, args):
         """Load the model and other prediction vars."""
         self.args = args
-        self.pred_threshold = 0.98
+        self.pred_threshold = 0.99
         self.predictions = []
         self.model = load_model(args.model_fn,
             custom_objects={'STFT':STFT,
