@@ -1,6 +1,6 @@
 import os
 import shutil
-from clean import check_dir
+from predict import check_dir
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 

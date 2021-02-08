@@ -1,6 +1,6 @@
 import os
 import argparse
-from clean import check_dir
+from predict import check_dir
 from predict import Predictor
 from extract import Extractor
 from convert import convert_vid_to_wav

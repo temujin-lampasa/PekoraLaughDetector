@@ -1,9 +1,11 @@
 import os
 import numpy as np
 from tqdm import tqdm
+import wavio
+from scipy.io import wavfile
+from librosa.core import resample, to_mono
 from tensorflow.keras.models import load_model
 from kapre.time_frequency import STFT, Magnitude, ApplyFilterbank, MagnitudeToDecibel
-from clean import downsample_mono
 
 
 class Predictor:
@@ -26,7 +28,7 @@ class Predictor:
             os.path.join(self.args.src_root, wav_fn), self.args.sr
         )
         delta_sample = int(self.args.delta_time*rate)
-        
+
         # audio is less than a single sample
         # pad with zeros to delta_sample size, then predict
         if wav.shape[0] < delta_sample:
@@ -70,3 +72,28 @@ class Predictor:
         pred_string = "".join([str(p) for p in self.predictions])
         with open(self.args.pred_file, 'w+') as f:
             f.write(pred_string)
+
+
+def downsample_mono(path, sr):
+    obj = wavio.read(path)
+    wav = obj.data.astype(np.float32, order='F')
+    rate = obj.rate
+    try:
+        channel = wav.shape[1]
+        if channel == 2:
+            wav = to_mono(wav.T)
+        elif channel == 1:
+            wav = to_mono(wav.reshape(-1))
+    except IndexError:
+        wav = to_mono(wav.reshape(-1))
+        pass
+    except Exception as exc:
+        raise exc
+    wav = resample(wav, rate, sr)
+    wav = wav.astype(np.int16)
+    return sr, wav
+
+
+def check_dir(path):
+    if not os.path.exists(path):
+        os.mkdir(path)
