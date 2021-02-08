@@ -62,13 +62,13 @@ class Extractor:
         shutil.rmtree(subclips_dir)
 
 
-def segment_array(array, patience=3, positive=1, min_size=0,
+def segment_array(array, tolerance=3, positive=1, min_size=0,
 left_padding=0, right_padding=1):
     """Divide an array into segments of positive instances.
     Used for retrieving segments [seg_start, seg_end) from an input video.
 
     Args:
-        patience (int): max space between segments.
+        tolerance (int): max space between segments.
         positive (int, str): the positive class.
         min_size (int): minimum segment size before padding.
         left_padding (int): padding for left side of segment.
@@ -80,7 +80,7 @@ left_padding=0, right_padding=1):
     Example:
         For array = [1, 0, 0, 1, 0, 0, 0, 0, 1]
         Calling this function:
-            segment_array(array, patience=3, left_padding=0,
+            segment_array(array, tolerance=3, left_padding=0,
                           right_padding=0, min_size=0)
         Returns this value:
             [(0, 4), (8, 9)]
@@ -98,9 +98,9 @@ left_padding=0, right_padding=1):
                     steps_since_positive = 0
                 else:
                     steps_since_positive += 1
-                    if steps_since_positive > patience:  # end segment
+                    if steps_since_positive > tolerance:  # end segment
                         in_segment = False
-                        seg_end.append(index - patience)
+                        seg_end.append(index - tolerance)
             elif not in_segment:
                 if value == positive:  # start of segment
                     steps_since_positive = 0
@@ -115,8 +115,8 @@ left_padding=0, right_padding=1):
                     seg_end.append(index + 1)
                 else:
                     steps_since_positive += 1
-                    if steps_since_positive > patience:
-                        seg_end.append(index - patience)
+                    if steps_since_positive > tolerance:
+                        seg_end.append(index - tolerance)
                     else:
                         seg_end.append(index - steps_since_positive + 1)
             elif not in_segment:
@@ -144,11 +144,10 @@ left_padding=0, right_padding=1):
         min_segments[index] = (start, end)
 
     # Merge overlapping segments
-    segments_merged = []
+    merged_segments = []
     current_segment = None
 
     min_segments.sort()
-
     while min_segments:
         if current_segment is None:  # first iter, set curr_segment
             current_segment = min_segments.pop(0)
@@ -157,8 +156,24 @@ left_padding=0, right_padding=1):
             if current_segment[1] >= next_segment[0]:  # merge
                 current_segment = (current_segment[0], next_segment[1])
             else:  # pop and change the current segment
-                segments_merged.append(current_segment)
+                merged_segments.append(current_segment)
                 current_segment = next_segment
     if current_segment:
-        segments_merged.append(current_segment)
-    return segments_merged
+        merged_segments.append(current_segment)
+
+    # Connect close together segments
+    conn_segments = []
+    while merged_segments:
+        next = merged_segments.pop(0)
+        if len(conn_segments) == 0
+            conn_segments.append(next)
+        else:
+            latest_seg = conn_segments[-1]
+            if (next[0] - latest_seg[1]) < tolerance:
+                new_seg = (latest_seg[0], next[1])
+                conn_segments.pop()
+                conn_segments.append(new_seg)
+            else:
+                conn_segments.append(next)
+
+    return conn_segments
