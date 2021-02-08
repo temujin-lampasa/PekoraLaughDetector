@@ -131,3 +131,5 @@ predictions.txt
 *.wav
 *.mp3
 *.mkv
+
+new_venv
