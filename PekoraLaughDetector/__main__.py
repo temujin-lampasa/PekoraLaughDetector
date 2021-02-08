@@ -23,8 +23,6 @@ if __name__ == '__main__':
     help='Model filename', metavar='')
     parser.add_argument('--pred_fn', type=str, default='y_pred',
     help='Prediction function', metavar='')
-    parser.add_argument('--threshold', type=int, default=20,
-    help='Mask threshold', metavar='')
     parser.add_argument('--pred_file', type=str, default='model/predictions.txt',
     help='Prediction file path', metavar='')
     # Convert
