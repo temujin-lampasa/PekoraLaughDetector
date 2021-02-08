@@ -7,28 +7,29 @@ from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 
 class Extractor:
     def __init__(self, args):
-        self.args = args
-        self.subclip_fn = "subclip"
-
         # Make subclips directory
         self.subclips_dir = os.path.join(
             args.extract_dst,
             "subclips_" + "".join(args.vid_fn.split(".")[:-1]))
-
         check_dir(self.subclips_dir)
+
+        self.subclip_fn = "subclip"
+
+        self.src_root = args.src_root
+        self.extract_dst = args.extract_dst
+        self.pred_file =  args.pred_file
+        self.vid_fn = args.vid_fn
+
+
 
     def extract(self):
         """Extract the video segments with positive predictions."""
         print("Extracting ...")
-        src_root = self.args.src_root
-        extract_dst = self.args.extract_dst
-        pred_file = self.args.pred_file
-        vid_fn = self.args.vid_fn
-        output_extension = "." + vid_fn.split(".")[-1]
+        output_extension = "." + self.vid_fn.split(".")[-1]
 
         # Retrieve predictions
         predictions = None
-        with open(pred_file, 'r') as p:
+        with open(self.pred_file, 'r') as p:
             predictions = [int(i) for i in p.readlines()[0].strip()]
 
         # Get segments with positive predictions
@@ -41,25 +42,21 @@ class Extractor:
             targetname = os.path.join(
                 self.subclips_dir,
                 f"{self.subclip_fn}{clip_num}{output_extension}")
-            src_file = os.path.join(src_root, vid_fn)
+            src_file = os.path.join(self.src_root, self.vid_fn)
             ffmpeg_extract_subclip(src_file, start, end, targetname=targetname)
 
     def merge_clips(self):
-        vid_fn = self.args.vid_fn
-        extract_dst = self.args.extract_dst
-        src_root = self.args.src_root
-        subclips_dir = self.subclips_dir
-        output_fn = "".join(vid_fn.split(".")[:-1]) + ".mp4"
+        output_fn = "".join(self.vid_fn.split(".")[:-1]) + ".mp4"
 
         # merge subclips
-        subclips_fn = os.listdir(subclips_dir)
-        subclips_fn.sort(key = lambda x: int(x.split(".")[0].strip(self.subclip_fn)))
-        subclips = [VideoFileClip(os.path.join(subclips_dir, sc)) for sc in subclips_fn]
+        subclips_fn = os.listdir(self.subclips_dir)
+        subclips_fn.sort(key=lambda x: int(x.split(".")[0].strip(self.subclip_fn)))
+        subclips = [VideoFileClip(os.path.join(self.subclips_dir, sc)) for sc in subclips_fn]
         combined_clips = concatenate_videoclips(subclips)
-        combined_clips.write_videofile(os.path.join(extract_dst, output_fn))
+        combined_clips.write_videofile(os.path.join(self.extract_dst, output_fn))
 
         # Delete subclips after merging
-        shutil.rmtree(subclips_dir)
+        shutil.rmtree(self.subclips_dir)
 
 
 def segment_array(array, tolerance=3, positive=1, min_size=0,
@@ -165,7 +162,7 @@ left_padding=0, right_padding=1):
     conn_segments = []
     while merged_segments:
         next = merged_segments.pop(0)
-        if len(conn_segments) == 0
+        if len(conn_segments) == 0:
             conn_segments.append(next)
         else:
             latest_seg = conn_segments[-1]
