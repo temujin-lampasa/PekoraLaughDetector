@@ -8,7 +8,7 @@ A tool to extract and compile Pekora laughs from videos.
 3. Run `python PekoraLaughDetector`
 
 The outputs are saved in the `video_output/` folder.
-If you don't want to more the outputs, pass the argument `--no_merge`.
+If you don't want to more the outputs, then pass the argument `--no_merge`.
 
 ## Acknowledgements
 The deep learning model and other parts of the code were modified from seth814's repository: 
