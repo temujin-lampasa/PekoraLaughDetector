@@ -57,11 +57,7 @@ class Extractor:
         combined_clips.write_videofile(os.path.join(self.extract_dst, output_fn))
 
         # Delete subclips after merging
-<<<<<<< HEAD
         if not self.keep:
-=======
-        if not args.keep():
->>>>>>> 51407c45ffd33b4895a4e67caf9b04c257aedc5e
             shutil.rmtree(self.subclips_dir)
 
 
