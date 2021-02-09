@@ -30,6 +30,8 @@ if __name__ == '__main__':
     help='Source video filename', metavar='')
     parser.add_argument('--no_merge', default=False, action='store_true',
     help="Don't merge the output clips")
+    parser.add_argument('--keep', default=False, action='store_true',
+    help="Keep subclips")
 
     args, _ = parser.parse_known_args()
 

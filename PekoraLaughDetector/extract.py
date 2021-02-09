@@ -19,6 +19,7 @@ class Extractor:
         self.extract_dst = args.extract_dst
         self.pred_file =  args.pred_file
         self.vid_fn = args.vid_fn
+        self.keep = args.keep
 
 
 
@@ -56,7 +57,8 @@ class Extractor:
         combined_clips.write_videofile(os.path.join(self.extract_dst, output_fn))
 
         # Delete subclips after merging
-        shutil.rmtree(self.subclips_dir)
+        if not self.keep:
+            shutil.rmtree(self.subclips_dir)
 
 
 def segment_array(array, tolerance=3, positive=1, min_size=0,
